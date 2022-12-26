@@ -1,0 +1,104 @@
+{
+    "bam": {
+        "family": "Mande",
+        "genus": "Western Mande",
+        "iso-3": "bam",
+        "name": "Bambara"
+    },
+    "ewe": {
+        "family": "Niger-Congo",
+        "genus": "Gbe",
+        "iso-3": "ewe",
+        "name": "Ewe"
+    },
+    "fon": {
+        "family": "Niger-Congo",
+        "genus": "Gbe",
+        "iso-3": "fon",
+        "name": "Fon"
+    },
+    "hau": {
+        "family": "Afro-Asiatic",
+        "genus": "West Chadic",
+        "iso-3": "hau",
+        "name": "Hausa"
+    },
+    "ibo": {
+        "family": "Niger-Congo",
+        "genus": "Igboid",
+        "iso-3": "ibo",
+        "name": "Igbo"
+    },
+    "kin": {
+        "family": "Niger-Congo",
+        "genus": "Bantu",
+        "iso-3": "kin",
+        "name": "Kinyarwanda"
+    },
+    "lug": {
+        "family": "Niger-Congo",
+        "genus": "Bantu",
+        "iso-3": "lug",
+        "name": "Ganda"
+    },
+    "mos": {
+        "family": "Niger-Congo",
+        "genus": "Oti-Volta",
+        "iso-3": "mos",
+        "name": "Mossi"
+    },
+    "nya": {
+        "family": "Niger-Congo",
+        "genus": "Bantu",
+        "iso-3": "nya",
+        "name": "Nyanja"
+    },
+    "pcm": {
+        "family": "other",
+        "genus": "Creoles and Pidgins",
+        "iso-3": "pcm",
+        "name": "Nigerian Pidgin"
+    },
+    "sna": {
+        "family": "Niger-Congo",
+        "genus": "Bantu",
+        "iso-3": "sna",
+        "name": "Shona"
+    },
+    "swa": {
+        "family": "Niger-Congo",
+        "genus": "Bantu",
+        "iso-3": "swa",
+        "name": "Swahili (macrolanguage)"
+    },
+    "tsn": {
+        "family": "Niger-Congo",
+        "genus": "Bantu",
+        "iso-3": "tsn",
+        "name": "Tswana"
+    },
+    "wol": {
+        "family": "Niger-Congo",
+        "genus": "Wolof",
+        "iso-3": "wol",
+        "name": "Wolof"
+    },
+    "xho": {
+        "family": "Niger-Congo",
+        "genus": "Bantu",
+        "iso-3": "xho",
+        "name": "Xhosa"
+    },
+    "yor": {
+        "family": "Niger-Congo",
+        "genus": "Defoid",
+        "iso-3": "yor",
+        "name": "Yoruba"
+    },
+    "zul": {
+        "family": "Niger-Congo",
+        "genus": "Bantu",
+        "iso-3": "zul",
+        "name": "Zulu"
+    }
+}

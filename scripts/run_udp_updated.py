@@ -77,6 +77,9 @@ class DataTrainingArguments:
     family_name: str = field(default=False,metadata={"help": "The identifier of the Universal Dependencies dataset to train on."})
     result_file: str = field(default=False,metadata={"help": "The identifier of the Universal Dependencies dataset to train on."})
     data_file: str = field(default=False,metadata={"help": "The identifier of the Universal Dependencies dataset to train on."})
+    ds_script_name: Optional[str] = field(
+        default=None, metadata={"help": "The name of the dataset script to use (via the datasets library)."}
+    )
     prefix: str = field(default=False,metadata={"help": "The identifier of the Universal Dependencies dataset to train on."})
     max_seq_length: int = field(
         default=128,
@@ -360,7 +363,7 @@ def main():
 
 
         def get_dataset(data_lang):
-                dataset = load_dataset("scripts/universal_dependencies.py", data_lang,
+                dataset = load_dataset(data_args.ds_script_name, data_lang,
                                        split=['test'], cache_dir=model_args.cache_dir)
                 dataset = DatasetDict({"test":dataset[0]})
                 dataset = preprocess_dataset(dataset, tokenizer, labels, data_args, pad_token_id=-1)
@@ -368,30 +371,37 @@ def main():
 
         import json
         with open(data_args.lang_config) as json_file:
-            ad_data = json.load(json_file)
-        adapter_info = ad_data[data_args.family_name]
-
+            adapter_info = json.load(json_file)
+        # adapter_info = ad_data[data_args.family_name]
 
         output_test_results_file = data_args.result_file
         if trainer.is_world_process_zero():
             writer = open(output_test_results_file, "a")
 
         text='x'
+        count=0
         for lang, info in adapter_info.items():
-            print(lang, info[1])
-            dataset=get_dataset(info[1])
+            count+=1
+            # if count>2:
+            #     break
+            print(lang, info, count)
+            try:
+                dataset=get_dataset(info["full"])
 
-            predictions, _, metrics = trainer.predict(dataset["test"])
+                predictions, _, metrics = trainer.predict(dataset["test"])
 
-            if trainer.is_world_process_zero():
-                logger.info("%s,%s,%s,%s,%s\n" % (data_args.prefix,task_name, 
-                    lang, 
-                    metrics['uas'], 
-                    metrics['las']))
-                writer.write("%s,%s,%s,%s,%s\n" % (data_args.prefix,task_name,
-                    lang, 
-                    metrics['uas'], 
-                    metrics['las']))
+                if trainer.is_world_process_zero():
+                    logger.info("%s,%s,%s,%s,%s\n" % (data_args.prefix,task_name, 
+                        lang, 
+                        metrics['uas'], 
+                        metrics['las']))
+                    writer.write("%s,%s,%s,%s,%s\n" % (data_args.prefix,task_name,
+                        lang, 
+                        metrics['uas'], 
+                        metrics['las']))
+            except:
+                logger.info("#########------------------------error happened in %s----------------########" %(lang))
+                writer.write("%s,%s,%s,%s,%s\n" % (data_args.prefix,task_name,  lang, 0, 0))
 
     return results
 
