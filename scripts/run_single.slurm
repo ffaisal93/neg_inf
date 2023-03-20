@@ -14,9 +14,11 @@
 
 task=$1
 lang=$2
+lang2=$3
+lang3=$4
 
 # to see ID and state of GPUs assigned
 nvidia-smi
-echo ${task} ${lang}
+echo ${task} ${lang} ${lang2} ${lang3}
 
-bash install.sh --task ${task} --lang ${lang}
+bash install.sh --task ${task} --lang ${lang} --lang2 ${lang2} --lang3 ${lang3}

@@ -119,12 +119,6 @@ class ModelArguments:
             )
         },
     )
-    leave_out_twelvth: bool = field(
-        default=False, metadata={"help": "Whether or not to leave out adapters in twelvth layer"}
-    )
-    freeze_adapter: bool = field(
-        default=False, metadata={"help": "Whether or not to freeze the loaded adapters"}
-    )
 
     def __post_init__(self):
         if self.config_overrides is not None and (self.config_name is not None or self.model_name_or_path is not None):
@@ -442,40 +436,11 @@ def main():
             model.set_active_adapters(ac.Stack(lang_adapter_name, task_name))
         else:
             model.set_active_adapters(task_name)
-    # else:
-    #     if adapter_args.load_adapter or adapter_args.load_lang_adapter:
-    #         raise ValueError(
-    #             "Adapters can only be loaded in adapters training mode.Use --train_adapter to enable adapter training"
-    #         )
-
-    if adapter_args.load_adapter:
-
-        if model_args.leave_out_twelvth:
-            logger.info("Leaving out 12")
-            leave_out = [11]
-        else:
-            leave_out = []
-
-        task_adapter_config = AdapterConfig.load(
-                        config="pfeiffer", non_linearity="gelu", reduction_factor=16, leave_out=leave_out
-                    )
-        lang_adapter = model.load_adapter(
-            adapter_args.load_adapter,
-            config=task_adapter_config,
-            load_as='ud',
-            leave_out=leave_out,
-        )
-
-        if model_args.freeze_adapter:
-            model.train_adapter([lang_adapter])
-            freeze_adapter(model, [lang_adapter])
-
-
-    # inspact_element(model)
-    # model.train_adapter([lang_adapter])
-    # inspact_element(model)
-    
-    # inspact_element(model)
+    else:
+        if adapter_args.load_adapter or adapter_args.load_lang_adapter:
+            raise ValueError(
+                "Adapters can only be loaded in adapters training mode.Use --train_adapter to enable adapter training"
+            )
 
     # Preprocessing the datasets.
     # First we tokenize all the texts.
@@ -694,40 +659,6 @@ def main():
 def _mp_fn(index):
     # For xla_spawn (TPUs)
     main()
-
-def inspact_element(model):
-    print("-----------------")
-    # inspact model
-    import numpy as np
-    for name, param in model.named_parameters():
-        shape=np.shape(param)
-        print(name, shape, param.requires_grad)
-        if len(shape)==2:
-            print(param[0][0])
-        else:
-            print(param[0])
-
-def freeze_adapter(model, adapter_list, train_embeddings=False):
-        """Sets the model into mode for training the given adapters."""
-        model.train()
-        model.freeze_model(False)
-        adapter_setup = adapter_list
-
-        for name, param in model.named_parameters():
-            if "adapter" in name:
-                param.requires_grad = False
-
-        for adapter_name in adapter_setup:
-            if adapter_name in model.base_model.shared_parameters:
-                print(adapter_name)
-                for param in model.base_model.shared_parameters[adapter_name].values():
-                    param.requires_grad = False
-        if hasattr(model, 'invertible_adapters'):
-            for adapter_name in adapter_setup:
-                if adapter_name in model.invertible_adapters:
-                    for param in model.invertible_adapters[adapter_name].parameters():
-                        param.requires_grad = False
-
 
 
 if __name__ == "__main__":

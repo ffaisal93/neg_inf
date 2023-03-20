@@ -1,6 +1,8 @@
 #!/bin/bash
 task=${task:-none}
 lang=${lang:-eng}
+lang2=${lang2:-eng}
+lang3=${lang3:-eng}
 
 while [ $# -gt 0 ]; do
 
@@ -31,7 +33,7 @@ cd /scratch/ffaisal/neg_inf
 # rm adapters3.1.0.tar.gz
 # mv adapter-transformers-adapters3.1.0 adapter-transformers-l
 # cd adapter-transformers-l
-##cp ../scripts/ad_l_trans_trainer.py src/transformers/trainer.py
+# #cp ../scripts/ad_l_trans_trainer.py src/transformers/trainer.py
 # pip install adapter-transformers
 # ../vnv/vnv-adp-l/bin/python -m pip install --upgrade pip
 # cd ..
@@ -45,7 +47,7 @@ cd /scratch/ffaisal/neg_inf
 
 # echo "------------------------------Install transformer latest------------------------------"
 # module load python/3.8.6-ff
-#training on task, while task adapter freezed
+# training on task, while task adapter freezed
 
 # rm -rf transformers-orig
 # rm -rf vnv/vnv-trns
@@ -64,16 +66,16 @@ cd /scratch/ffaisal/neg_inf
 # deactivate
 
 
-# if [[ "$task" = "download_udp_train" || "$task" = "all" ]]; then
-# 	echo "-------------------------------Download UDP all train data-----------------------------"
-# 	cd data
-# 	wget -O udp_all_train.zip https://gmuedu-my.sharepoint.com/:u:/g/personal/ffaisal_gmu_edu/EZRJRItvJ9ZCsykKm8MZlwcBuMF8Va3kShpHcg4JqT3yxg?download=1
-# 	module load openjdk/11.0.2-qg
-# 	jar -xf udp_all_train.zip
-# 	rm udp_all_train.zip
-# 	module unload openjdk/11.0.2-qg
-# 	cd ..
-# fi
+if [[ "$task" = "download_udp_train" || "$task" = "all" ]]; then
+	echo "-------------------------------Download UDP all train data-----------------------------"
+	cd data
+	wget -O udp_all_train.zip https://gmuedu-my.sharepoint.com/:u:/g/personal/ffaisal_gmu_edu/EZRJRItvJ9ZCsykKm8MZlwcBuMF8Va3kShpHcg4JqT3yxg?download=1
+	module load openjdk/11.0.2-qg
+	jar -xf udp_all_train.zip
+	rm udp_all_train.zip
+	module unload openjdk/11.0.2-qg
+	cd ..
+fi
 
 if [[ "$task" = "download_ner_train" || "$task" = "all" ]]; then
 	echo "-------------------------------Download NER all train data-----------------------------"
@@ -97,8 +99,9 @@ if [[ "$task" = "train_udp_all" || "$task" = "all" ]]; then
 
 	export TASK_NAME="udp_all"
 
-	python scripts/run_udp.py \
+	python scripts/run_udp_updated.py \
 	    --model_name_or_path bert-base-multilingual-cased \
+	    --data_file data/udp_all_train \
 	    --do_train \
 	    --task_name $TASK_NAME \
 	    --per_device_train_batch_size 12 \
@@ -249,6 +252,7 @@ fi
 if [[ "$task" = "mlm_train_data_1k" || "$task" = "all" ]]; then
 	echo "------------------------------Create mlm all train 1k data-------------------------------"
 	cd data/mlm_data
+	rm -rf ../mlm_data_1k
 	mkdir ../mlm_data_1k
 
 	for file in ./*
@@ -719,6 +723,109 @@ if [[ "$task" = "freeze_mlm_udp_single_train_eval" ]]; then
 	done
 fi
 
+if [[ "$task" = "train_lang_adapters" ]]; then
+	echo "------------------------------Train Lang Adapters--------------------------------------"
+	file=${lang}
+	filename=${file}.txt
+	output_dir="tmp/adapters/${file}"
+	source vnv/vnv-adp-l/bin/activate
+	python scripts/run_mlm_adapter.py \
+		--model_name_or_path bert-base-multilingual-cased \
+		--train_file data/mlm_data/${filename} \
+		--validation_file data/mlm_data_1k/${filename} \
+		--per_device_train_batch_size 8 \
+		--per_device_eval_batch_size 8 \
+		--do_train \
+		--do_eval \
+		--output_dir ${output_dir} \
+		--overwrite_output_dir \
+		--train_adapter
+	rm -rf ${output_dir}/checkpoint*
+	deactivate
+fi
+
+if [[ "$task" = "eval_udp_adapters_2" ]]; then
+	echo "------------------------------Evaluate UDP Adapters--------------------------------------"
+	file=${lang}
+	filename=${file}.txt
+	datafile="data/udp_all_train"
+	output_dir="tmp/adapters/${file}"
+	text="${lang}_${lang2}"
+	export TASK_NAME="udp_all"
+	echo ${TASK_NAME}------------------------------------
+	rm "experiments/adapter/udp_2lang_test_results_${lang}_${lang2}.txt"
+	result_file="experiments/adapter/udp_2lang_test_results_${lang}_${lang2}.txt"
+	source vnv/vnv-adp-l/bin/activate
+
+	python scripts/run_udp_adapter.py \
+		--model_name_or_path bert-base-multilingual-cased \
+		--do_eval False \
+		--do_predict \
+		--do_predict_adapter \
+		--lang_1 ${lang} \
+		--lang_2 ${lang2} \
+		--lang_adapter_path tmp/adapters \
+		--prefix ${text} \
+		--ds_script_name scripts/universal_dependencies.py \
+		--lang_config metadata/udp_metadata.json \
+		--task_name $TASK_NAME \
+		--per_device_train_batch_size 12 \
+		--learning_rate 5e-4 \
+		--num_train_epochs 5 \
+		--max_seq_length 256 \
+		--cache_dir /scratch/ffaisal/hug_cache/datasets/$TASK_NAME \
+		--output_dir experiments/$TASK_NAME/ud_$TASK_NAME \
+		--data_file ${datafile} \
+		--result_file ${result_file} \
+		--overwrite_output_dir \
+		--store_best_model \
+		--evaluation_strategy epoch \
+		--metric_score las
+
+	deactivate
+fi
+
+if [[ "$task" = "eval_udp_adapters_3" ]]; then
+	echo "------------------------------Evaluate UDP Adapters--------------------------------------"
+	file=${lang}
+	filename=${file}.txt
+	datafile="data/udp_all_train"
+	output_dir="tmp/adapters/${file}"
+	text="${lang}_${lang2}_${lang3}"
+	export TASK_NAME="udp_all"
+	echo ${TASK_NAME}------------------------------------
+	rm "experiments/adapter/udp_3lang_test_results_${lang}_${lang2}_${lang3}.txt"
+	result_file="experiments/adapter/udp_3lang_test_results_${lang}_${lang2}_${lang3}.txt"
+	source vnv/vnv-adp-l/bin/activate
+
+	python scripts/run_udp_adapter.py \
+		--model_name_or_path bert-base-multilingual-cased \
+		--do_eval False \
+		--do_predict \
+		--do_predict_adapter \
+		--lang_1 ${lang} \
+		--lang_2 ${lang2} \
+		--lang_3 ${lang3} \
+		--lang_adapter_path tmp/adapters \
+		--prefix ${text} \
+		--ds_script_name scripts/universal_dependencies.py \
+		--lang_config metadata/udp_metadata.json \
+		--task_name $TASK_NAME \
+		--per_device_train_batch_size 12 \
+		--learning_rate 5e-4 \
+		--num_train_epochs 5 \
+		--max_seq_length 256 \
+		--cache_dir /scratch/ffaisal/hug_cache/datasets/$TASK_NAME \
+		--output_dir experiments/$TASK_NAME/ud_$TASK_NAME \
+		--data_file ${datafile} \
+		--result_file ${result_file} \
+		--overwrite_output_dir \
+		--store_best_model \
+		--evaluation_strategy epoch \
+		--metric_score las
+
+	deactivate
+fi
 
 
 # source vnv/vnv-adp-l/bin/activate

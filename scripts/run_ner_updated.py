@@ -689,7 +689,7 @@ def main():
 
 
         def get_dataset(data_lang):
-            if "test" not in raw_datasets:
+            # if "test" not in raw_datasets:
                 # raise ValueError("--do_predict requires a test dataset")
                 # predict_dataset = raw_datasets["test"]
                 predict_dataset = load_dataset(data_args.ds_script_name, data_lang,
@@ -707,6 +707,8 @@ def main():
                         load_from_cache_file=not data_args.overwrite_cache,
                         desc="Running tokenizer on prediction dataset",
                     )
+            # else:
+            #     predict_dataset = raw_datasets["test"]
                 return predict_dataset
 
         import json
@@ -724,7 +726,8 @@ def main():
             count+=1
             # if count>2:
             #     break
-            print(lang, info, count)
+            # if lang=='en':
+            #     print(lang, info, count)
             try:
                 predict_dataset=get_dataset(lang)
                 predictions, labels, metrics = trainer.predict(predict_dataset, metric_key_prefix="predict")

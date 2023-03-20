@@ -314,6 +314,118 @@ elif [ "$ope" == "en-mb-ufr_ud-en" ]; then
     cd ..
 
 
+elif [ "$ope" == "ner_temp" ]; then
+
+    mfile="a-uf-ud"
+
+    cd /scratch/ffaisal/neg_inf
+    output_dir="tmp/test"
+
+    deactivate
+    source vnv/vnv-trns/bin/activate
+
+    python scripts/run_mlm_no_trainer.py \
+        --model_name_or_path xlm-roberta-base \
+        --train_file data/mlm_data/eng.txt \
+        --per_device_train_batch_size 8 \
+        --per_device_eval_batch_size 8 \
+        --num_train_epochs 5 \
+        --max_train_steps 100 \
+        --max_seq_length 512 \
+        --output_dir ${output_dir}
+    deactivate
+
+
+    source vnv/vnv-adp-l/bin/activate
+    
+    text="ner_temp"         
+    result_file=tmp/ner_test.txt
+    label_column_name="ner_tags"
+    export TASK_NAME="ner"
+
+
+    # python scripts/run_ner_updated.py \
+    #     --model_name_or_path ${output_dir} \
+    #     --do_predict \
+    #     --prefix ${text} \
+    #     --dataset_name wikiann \
+    #     --ds_script_name wikiann \
+    #     --data_file data/ner_all_train \
+    #     --lang_config metadata/ner_metadata.json \
+    #     --task_name $TASK_NAME \
+    #     --label_column_name ${label_column_name} \
+    #     --output_dir experiments/$TASK_NAME/$TASK_NAME \
+    #     --result_file ${result_file} \
+    #     --cache_dir /scratch/ffaisal/hug_cache/datasets/$TASK_NAME \
+    #     --per_device_train_batch_size 12 \
+    #     --learning_rate 5e-4 \
+    #     --num_train_epochs 5 \
+    #     --max_seq_length 256 \
+    #     --overwrite_output_dir
+
+    # python scripts/run_ner_updated.py \
+    #     --model_name_or_path bert-base-multilingual-cased \
+    #     --do_predict \
+    #     --prefix ${text} \
+    #     --dataset_name wikiann \
+    #     --ds_script_name wikiann \
+    #     --data_file data/ner_all_train \
+    #     --lang_config metadata/ner_metadata.json \
+    #     --task_name $TASK_NAME \
+    #     --label_column_name ${label_column_name} \
+    #     --output_dir experiments/$TASK_NAME/$TASK_NAME \
+    #     --result_file ${result_file} \
+    #     --cache_dir /scratch/ffaisal/hug_cache/datasets/$TASK_NAME \
+    #     --per_device_train_batch_size 12 \
+    #     --learning_rate 5e-4 \
+    #     --num_train_epochs 5 \
+    #     --max_seq_length 256 \
+    #     --overwrite_output_dir
+
+    python scripts/run_ner_updated.py \
+        --model_name_or_path ${output_dir} \
+        --do_predict \
+        --prefix ${text} \
+        --dataset_name wikiann \
+        --ds_script_name wikiann \
+        --data_file data/ner_all_train \
+        --lang_config metadata/ner_metadata.json \
+        --task_name $TASK_NAME \
+        --label_column_name ${label_column_name} \
+        --output_dir experiments/$TASK_NAME/$TASK_NAME/$TASK_NAME \
+        --result_file ${result_file} \
+        --cache_dir /scratch/ffaisal/hug_cache/datasets/$TASK_NAME \
+        --per_device_train_batch_size 32 \
+        --learning_rate 5e-4 \
+        --num_train_epochs 1 \
+        --max_seq_length 256 \
+        --overwrite_output_dir \
+        --dataset_config_name en \
+        --do_train \
+        --train_adapter
+
+    # python scripts/run_ner_updated.py \
+    #     --model_name_or_path bert-base-multilingual-uncased \
+    #     --do_predict \
+    #     --prefix ${text} \
+    #     --dataset_name wikiann \
+    #     --ds_script_name wikiann \
+    #     --data_file data/ner_all_train \
+    #     --lang_config metadata/ner_metadata.json \
+    #     --task_name $TASK_NAME \
+    #     --label_column_name ${label_column_name} \
+    #     --output_dir experiments/$TASK_NAME/$TASK_NAME \
+    #     --result_file ${result_file} \
+    #     --cache_dir /scratch/ffaisal/hug_cache/datasets/$TASK_NAME \
+    #     --per_device_train_batch_size 12 \
+    #     --learning_rate 5e-4 \
+    #     --num_train_epochs 5 \
+    #     --max_seq_length 256 \
+    #     --overwrite_output_dir
+
+    deactivate
+
+
 fi
 
 #./test.sh mb-en
