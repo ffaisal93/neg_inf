@@ -377,11 +377,13 @@ def main():
                 lang_1_path = os.path.join(model_args.lang_adapter_path ,model_args.lang_1,'mlm')
                 logger.info('lang_1_path:{}'.format(lang_1_path))
                 lang_1_name=load_ladapters(lang_1_path, 'lang_1')
+                adp_list=[lang_1_name]
 
-                lang_2_path = os.path.join(model_args.lang_adapter_path ,model_args.lang_2,'mlm')
-                logger.info('lang_2_path:{}'.format(lang_2_path))
-                lang_2_name=load_ladapters(lang_2_path, 'lang_2')
-                adp_list=[lang_1_name, lang_2_name]
+                if model_args.lang_2 is not None:
+                    lang_2_path = os.path.join(model_args.lang_adapter_path ,model_args.lang_2,'mlm')
+                    logger.info('lang_2_path:{}'.format(lang_2_path))
+                    lang_2_name=load_ladapters(lang_2_path, 'lang_2')
+                    adp_list.append(lang_2_name)
 
                 if model_args.lang_3 is not None:
                     lang_3_path = os.path.join(model_args.lang_adapter_path ,model_args.lang_3,'mlm')
@@ -394,10 +396,12 @@ def main():
                 task_adapter_name=load_tadapters(task_path, 'task_j')
 
                 model.add_adapter_fusion(adp_list)
-                if model_args.lang_3 is not None:
+                if model_args.lang_3 is not None and model_args.lang_2 is not None:
                     model.active_adapters = ac.Stack(ac.Fuse(lang_1_name, lang_2_name, lang_3_name), task_adapter_name)
-                else:
+                elif model_args.lang_3 is None and model_args.lang_2 is not None:
                     model.active_adapters = ac.Stack(ac.Fuse(lang_1_name, lang_2_name), task_adapter_name)
+                else:
+                    model.active_adapters = ac.Stack(lang_1_name, task_adapter_name)
                 trainer.model = model.to(training_args.device)
 
             else:
@@ -454,6 +458,19 @@ def main():
 
         text='x'
         count=0
+
+        if model_args.lang_3 is not None:
+            langs_to_consider=[model_args.lang_1, model_args.lang_2, model_args.lang_3]
+            langs_to_consider=['fra' if item=='fre' else item for item in langs_to_consider]
+            langs_to_consider=['jpn' if item=='jap' else item for item in langs_to_consider]
+            ad_info={}
+            for i,v in adapter_info.items():
+                if 'iso-3' in v and v['iso-3'] in langs_to_consider:
+                    ad_info[i]=adapter_info[i]
+            adapter_info=ad_info
+            print('langs to consider: {}'.format(langs_to_consider))
+            print('adapter_info: {}'.format(adapter_info))
+
         for lang, info in adapter_info.items():
             count+=1
             # if count>1:

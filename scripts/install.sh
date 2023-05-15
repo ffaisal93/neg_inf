@@ -34,7 +34,7 @@ cd /scratch/ffaisal/neg_inf
 # mv adapter-transformers-adapters3.1.0 adapter-transformers-l
 # cd adapter-transformers-l
 # #cp ../scripts/ad_l_trans_trainer.py src/transformers/trainer.py
-# pip install adapter-transformers
+# pip install .
 # ../vnv/vnv-adp-l/bin/python -m pip install --upgrade pip
 # cd ..
 # pip install --upgrade pip
@@ -744,6 +744,129 @@ if [[ "$task" = "train_lang_adapters" ]]; then
 	deactivate
 fi
 
+
+if [[ "$task" = "eval_udp_adapters_1" ]]; then
+	echo "------------------------------Evaluate UDP Adapters--------------------------------------"
+	file=${lang}
+	filename=${file}.txt
+	datafile="data/udp_all_train"
+	output_dir="tmp/adapters/${file}"
+	text="${lang}"
+	export TASK_NAME="udp_all"
+	echo ${TASK_NAME}------------------------------------
+	rm "experiments/adapter/udp_1lang_test_results_${lang}.txt"
+	result_file="experiments/adapter/udp_1lang_test_results_${lang}.txt"
+	source vnv/vnv-adp-l/bin/activate
+
+	python scripts/run_udp_adapter.py \
+		--model_name_or_path bert-base-multilingual-cased \
+		--do_eval False \
+		--do_predict \
+		--do_predict_adapter \
+		--lang_1 ${lang} \
+		--lang_adapter_path tmp/adapters \
+		--prefix ${text} \
+		--ds_script_name scripts/universal_dependencies.py \
+		--lang_config metadata/udp_metadata.json \
+		--task_name $TASK_NAME \
+		--per_device_train_batch_size 12 \
+		--learning_rate 5e-4 \
+		--num_train_epochs 5 \
+		--max_seq_length 256 \
+		--cache_dir /scratch/ffaisal/hug_cache/datasets/$TASK_NAME \
+		--output_dir experiments/$TASK_NAME/ud_$TASK_NAME \
+		--data_file ${datafile} \
+		--result_file ${result_file} \
+		--overwrite_output_dir \
+		--store_best_model \
+		--evaluation_strategy epoch \
+		--metric_score las
+
+	deactivate
+fi
+
+if [[ "$task" = "eval_pos_adapters_1" ]]; then
+	echo "------------------------------Evaluate POS Adapters--------------------------------------"
+	file=${lang}
+	filename=${file}.txt
+	datafile="data/udp_all_train"
+	output_dir="tmp/adapters/${file}"
+	text="${lang}"
+	export TASK_NAME="pos_all"
+	echo ${TASK_NAME}------------------------------------
+	rm "experiments/adapter/pos_1lang_test_results_${lang}.txt"
+	result_file="experiments/adapter/pos_1lang_test_results_${lang}.txt"
+	source vnv/vnv-adp-l/bin/activate
+
+	python scripts/run_pos_adapter.py \
+		--model_name_or_path bert-base-multilingual-cased \
+		--do_eval False \
+		--do_predict \
+		--do_predict_adapter \
+		--lang_1 ${lang} \
+		--lang_adapter_path tmp/adapters \
+		--prefix ${text} \
+		--ds_script_name scripts/universal_dependencies.py \
+		--dataset_name universal_dependencies \
+		--lang_config metadata/udp_metadata.json \
+		--task_name $TASK_NAME \
+		--label_column_name upos \
+		--per_device_train_batch_size 12 \
+		--learning_rate 5e-4 \
+		--num_train_epochs 5 \
+		--max_seq_length 256 \
+		--cache_dir /scratch/ffaisal/hug_cache/datasets/$TASK_NAME \
+		--output_dir experiments/$TASK_NAME/$TASK_NAME \
+		--data_file ${datafile} \
+		--result_file ${result_file} \
+		--overwrite_output_dir
+
+	deactivate
+fi
+
+if [[ "$task" = "eval_ner_adapters_1" ]]; then
+	echo "------------------------------Evaluate UDP Adapters--------------------------------------"
+	file=${lang}
+	filename=${file}.txt
+	label_column_name="ner_tags"
+	datafile="data/ner_all_train"
+	output_dir="tmp/adapters/${file}"
+	text="${lang}"
+	export TASK_NAME="ner_all"
+	echo ${TASK_NAME}------------------------------------
+	rm "experiments/adapter/ner_1lang_test_results_${lang}.txt"
+	result_file="experiments/adapter/ner_1lang_test_results_${lang}.txt"
+	source vnv/vnv-adp-l/bin/activate
+
+	python scripts/run_ner_adapter.py \
+		--model_name_or_path bert-base-multilingual-cased \
+		--do_eval False \
+		--do_predict \
+		--do_predict_adapter \
+		--lang_1 ${lang} \
+		--lang_adapter_path tmp/adapters \
+		--prefix ${text} \
+		--ds_script_name wikiann \
+		--dataset_name wikiann \
+		--data_file data/ner_all_train \
+		--lang_config metadata/ner_metadata.json \
+		--task_name $TASK_NAME \
+		--label_column_name ${label_column_name} \
+		--per_device_train_batch_size 12 \
+		--learning_rate 5e-4 \
+		--num_train_epochs 5 \
+		--max_seq_length 256 \
+		--cache_dir /scratch/ffaisal/hug_cache/datasets/$TASK_NAME \
+		--output_dir experiments/$TASK_NAME/$TASK_NAME \
+		--result_file ${result_file} \
+		--overwrite_output_dir
+
+	deactivate
+fi
+
+
+
+
 if [[ "$task" = "eval_udp_adapters_2" ]]; then
 	echo "------------------------------Evaluate UDP Adapters--------------------------------------"
 	file=${lang}
@@ -781,6 +904,87 @@ if [[ "$task" = "eval_udp_adapters_2" ]]; then
 		--store_best_model \
 		--evaluation_strategy epoch \
 		--metric_score las
+
+	deactivate
+fi
+
+if [[ "$task" = "eval_pos_adapters_2" ]]; then
+	echo "------------------------------Evaluate POS Adapters--------------------------------------"
+	file=${lang}
+	filename=${file}.txt
+	datafile="data/udp_all_train"
+	output_dir="tmp/adapters/${file}"
+	text="${lang}_${lang2}"
+	export TASK_NAME="pos_all"
+	echo ${TASK_NAME}------------------------------------
+	rm "experiments/adapter/pos_2lang_test_results_${lang}_${lang2}.txt"
+	result_file="experiments/adapter/pos_2lang_test_results_${lang}_${lang2}.txt"
+	source vnv/vnv-adp-l/bin/activate
+
+	python scripts/run_pos_adapter.py \
+		--model_name_or_path bert-base-multilingual-cased \
+		--do_eval False \
+		--do_predict \
+		--do_predict_adapter \
+		--lang_1 ${lang} \
+		--lang_2 ${lang2} \
+		--lang_adapter_path tmp/adapters \
+		--prefix ${text} \
+		--ds_script_name scripts/universal_dependencies.py \
+		--dataset_name universal_dependencies \
+		--lang_config metadata/udp_metadata.json \
+		--task_name $TASK_NAME \
+		--label_column_name upos \
+		--per_device_train_batch_size 12 \
+		--learning_rate 5e-4 \
+		--num_train_epochs 5 \
+		--max_seq_length 256 \
+		--cache_dir /scratch/ffaisal/hug_cache/datasets/$TASK_NAME \
+		--output_dir experiments/$TASK_NAME/$TASK_NAME \
+		--data_file ${datafile} \
+		--result_file ${result_file} \
+		--overwrite_output_dir
+
+	deactivate
+fi
+
+if [[ "$task" = "eval_ner_adapters_2" ]]; then
+	echo "------------------------------Evaluate UDP Adapters--------------------------------------"
+	file=${lang}
+	filename=${file}.txt
+	label_column_name="ner_tags"
+	datafile="data/ner_all_train"
+	output_dir="tmp/adapters/${file}"
+	text="${lang}_${lang2}"
+	export TASK_NAME="ner_all"
+	echo ${TASK_NAME}------------------------------------
+	rm "experiments/adapter/ner_2lang_test_results_${lang}_${lang2}.txt"
+	result_file="experiments/adapter/ner_2lang_test_results_${lang}_${lang2}.txt"
+	source vnv/vnv-adp-l/bin/activate
+
+	python scripts/run_ner_adapter.py \
+		--model_name_or_path bert-base-multilingual-cased \
+		--do_eval False \
+		--do_predict \
+		--do_predict_adapter \
+		--lang_1 ${lang} \
+		--lang_2 ${lang2} \
+		--lang_adapter_path tmp/adapters \
+		--prefix ${text} \
+		--ds_script_name wikiann \
+		--dataset_name wikiann \
+		--data_file data/ner_all_train \
+		--lang_config metadata/ner_metadata.json \
+		--task_name $TASK_NAME \
+		--label_column_name ${label_column_name} \
+		--per_device_train_batch_size 12 \
+		--learning_rate 5e-4 \
+		--num_train_epochs 5 \
+		--max_seq_length 256 \
+		--cache_dir /scratch/ffaisal/hug_cache/datasets/$TASK_NAME \
+		--output_dir experiments/$TASK_NAME/$TASK_NAME \
+		--result_file ${result_file} \
+		--overwrite_output_dir
 
 	deactivate
 fi
@@ -823,6 +1027,89 @@ if [[ "$task" = "eval_udp_adapters_3" ]]; then
 		--store_best_model \
 		--evaluation_strategy epoch \
 		--metric_score las
+
+	deactivate
+fi
+
+if [[ "$task" = "eval_pos_adapters_3" ]]; then
+	echo "------------------------------Evaluate POS Adapters--------------------------------------"
+	file=${lang}
+	filename=${file}.txt
+	datafile="data/udp_all_train"
+	output_dir="tmp/adapters/${file}"
+	text="${lang}_${lang2}_${lang3}"
+	export TASK_NAME="pos_all"
+	echo ${TASK_NAME}------------------------------------
+	rm "experiments/adapter/pos_3lang_test_results_${lang}_${lang2}_${lang3}.txt"
+	result_file="experiments/adapter/pos_3lang_test_results_${lang}_${lang2}_${lang3}.txt"
+	source vnv/vnv-adp-l/bin/activate
+
+	python scripts/run_pos_adapter.py \
+		--model_name_or_path bert-base-multilingual-cased \
+		--do_eval False \
+		--do_predict \
+		--do_predict_adapter \
+		--lang_1 ${lang} \
+		--lang_2 ${lang2} \
+		--lang_3 ${lang3} \
+		--lang_adapter_path tmp/adapters \
+		--prefix ${text} \
+		--ds_script_name scripts/universal_dependencies.py \
+		--dataset_name universal_dependencies \
+		--lang_config metadata/udp_metadata.json \
+		--task_name $TASK_NAME \
+		--label_column_name upos \
+		--per_device_train_batch_size 12 \
+		--learning_rate 5e-4 \
+		--num_train_epochs 5 \
+		--max_seq_length 256 \
+		--cache_dir /scratch/ffaisal/hug_cache/datasets/$TASK_NAME \
+		--output_dir experiments/$TASK_NAME/$TASK_NAME \
+		--data_file ${datafile} \
+		--result_file ${result_file} \
+		--overwrite_output_dir
+
+	deactivate
+fi
+
+if [[ "$task" = "eval_ner_adapters_3" ]]; then
+	echo "------------------------------Evaluate UDP Adapters--------------------------------------"
+	file=${lang}
+	filename=${file}.txt
+	label_column_name="ner_tags"
+	datafile="data/ner_all_train"
+	output_dir="tmp/adapters/${file}"
+	text="${lang}_${lang2}_${lang3}"
+	export TASK_NAME="ner_all"
+	echo ${TASK_NAME}------------------------------------
+	rm "experiments/adapter/ner_3lang_test_results_${lang}_${lang2}_${lang3}.txt"
+	result_file="experiments/adapter/ner_3lang_test_results_${lang}_${lang2}_${lang3}.txt"
+	source vnv/vnv-adp-l/bin/activate
+
+	python scripts/run_ner_adapter.py \
+		--model_name_or_path bert-base-multilingual-cased \
+		--do_eval False \
+		--do_predict \
+		--do_predict_adapter \
+		--lang_1 ${lang} \
+		--lang_2 ${lang2} \
+		--lang_3 ${lang3} \
+		--lang_adapter_path tmp/adapters \
+		--prefix ${text} \
+		--ds_script_name wikiann \
+		--dataset_name wikiann \
+		--data_file data/ner_all_train \
+		--lang_config metadata/ner_metadata.json \
+		--task_name $TASK_NAME \
+		--label_column_name ${label_column_name} \
+		--per_device_train_batch_size 12 \
+		--learning_rate 5e-4 \
+		--num_train_epochs 5 \
+		--max_seq_length 256 \
+		--cache_dir /scratch/ffaisal/hug_cache/datasets/$TASK_NAME \
+		--output_dir experiments/$TASK_NAME/$TASK_NAME \
+		--result_file ${result_file} \
+		--overwrite_output_dir
 
 	deactivate
 fi
