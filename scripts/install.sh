@@ -21,49 +21,59 @@ echo ${lang}
 module load python/3.8.6-ff
 cd /scratch/ffaisal/neg_inf
 
+if [[ "$task" = "install_adapter" || "$task" = "all" ]]; then
+	echo "------------------------------Install adapter latest------------------------------"
+	module load python/3.8.6-ff
+	rm -rf adapter-transformers-l
+	rm -rf vnv/vnv-adp-l
+	python -m venv vnv/vnv-adp-l
+	source vnv/vnv-adp-l/bin/activate
+	wget -O adapters3.1.0.tar.gz https://github.com/adapter-hub/adapter-transformers/archive/refs/tags/adapters3.1.0.tar.gz
+	tar -xf adapters3.1.0.tar.gz
+	rm adapters3.1.0.tar.gz
+	mv adapter-transformers-adapters3.1.0 adapter-transformers-l
+	cd adapter-transformers-l
+	#cp ../scripts/ad_l_trans_trainer.py src/transformers/trainer.py
+	pip install .
+	../vnv/vnv-adp-l/bin/python -m pip install --upgrade pip
+	cd ..
+	pip install --upgrade pip
+	pip3 install -r requirements.txt
+	##for A100 gpu
+	deactivate
+fi
 
-# echo "------------------------------Install adapter latest------------------------------"
-# module load python/3.8.6-ff
-# rm -rf adapter-transformers-l
-# rm -rf vnv/vnv-adp-l
-# python -m venv vnv/vnv-adp-l
-# source vnv/vnv-adp-l/bin/activate
-# wget -O adapters3.1.0.tar.gz https://github.com/adapter-hub/adapter-transformers/archive/refs/tags/adapters3.1.0.tar.gz
-# tar -xf adapters3.1.0.tar.gz
-# rm adapters3.1.0.tar.gz
-# mv adapter-transformers-adapters3.1.0 adapter-transformers-l
-# cd adapter-transformers-l
-# #cp ../scripts/ad_l_trans_trainer.py src/transformers/trainer.py
-# pip install .
-# ../vnv/vnv-adp-l/bin/python -m pip install --upgrade pip
-# cd ..
-# pip install --upgrade pip
-# pip3 install -r requirements.txt
-# ##for A100 gpu
-# deactivate
 
 
+if [[ "$task" = "install_transformer" || "$task" = "all" ]]; then
+	echo "------------------------------Install transformer latest------------------------------"
+	module load python/3.8.6-ff
+	training on task, while task adapter freezed
+	
+	rm -rf transformers-orig
+	rm -rf vnv/vnv-trns
+	module load python/3.8.6-ff
+	python -m venv vnv/vnv-trns
+	source vnv/vnv-trns/bin/activate
+	wget -O transformersv4.21.1.tar.gz "https://github.com/huggingface/transformers/archive/refs/tags/v4.21.1.tar.gz"
+	tar -xf transformersv4.21.1.tar.gz
+	rm transformersv4.21.1.tar.gz
+	mv transformers-4.21.1 transformers-orig
+	cd transformers-orig
+	pip install .
+	pip install --upgrade pip
+	cd ..
+	pip install -r requirements.txt
+	deactivate
+fi
 
-
-# echo "------------------------------Install transformer latest------------------------------"
-# module load python/3.8.6-ff
-# training on task, while task adapter freezed
-
-# rm -rf transformers-orig
-# rm -rf vnv/vnv-trns
-# module load python/3.8.6-ff
-# python -m venv vnv/vnv-trns
-# source vnv/vnv-trns/bin/activate
-# wget -O transformersv4.21.1.tar.gz "https://github.com/huggingface/transformers/archive/refs/tags/v4.21.1.tar.gz"
-# tar -xf transformersv4.21.1.tar.gz
-# rm transformersv4.21.1.tar.gz
-# mv transformers-4.21.1 transformers-orig
-# cd transformers-orig
-# pip install .
-# pip install --upgrade pip
-# cd ..
-# pip install -r requirements.txt
-# deactivate
+if [[ "$task" = "create_dir" || "$task" = "all" ]]; then
+	echo "-------------------------------create data dir-----------------------------"
+ 	mkdir data
+  	mkdir experiments
+   	mkdir results
+    	mkdir tr_output
+fi
 
 
 if [[ "$task" = "download_udp_train" || "$task" = "all" ]]; then
