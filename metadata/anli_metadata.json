@@ -1,0 +1,72 @@
+{
+    "aym": {
+        "family": "Aymaran",
+        "genus": "Aymaran",
+        "iso-3": "aym",
+        "name": "Aymara",
+        "script": "Latn"
+    },
+    "bzd": {
+        "family": "Chibchan",
+        "genus": "Talamanca",
+        "iso-3": "bzd",
+        "name": "Bribri",
+        "script": "Latn"
+    },
+    "cni": {
+        "family": "Arawak",
+        "genus": "Southern",
+        "iso-3": "cni",
+        "name": "Asháninka",
+        "script": "Latn"
+    },
+    "gn": {
+        "family": "Tupian",
+        "genus": " Tupi-Guaraní",
+        "iso-3": "gn",
+        "name": "Guaraní",
+        "script": "Latn"
+    },
+    "hch": {
+        "family": "Uto-Aztecann",
+        "genus": "Corachol",
+        "iso-3": "hch",
+        "name": "Huichol",
+        "script": "Latn"
+    },
+    "nah": {
+        "family": "Uto-Aztecan",
+        "genus": "Aztecan",
+        "iso-3": "nah",
+        "name": "Nahuatl",
+        "script": "Latn"
+    },
+    "oto": {
+        "family": " Oto-Manguean",
+        "genus": " Oto-Manguean",
+        "iso-3": "oto",
+        "name": "Otomí",
+        "script": "Latn"
+    },
+    "quy": {
+        "family": "Quechuan",
+        "genus": "Quechuan",
+        "iso-3": "quy",
+        "name": "Quechua",
+        "script": "Latn"
+    },
+    "shp": {
+        "family": "Panoann",
+        "genus": "Panoan",
+        "iso-3": "shp",
+        "name": "Shipibo-Konibo",
+        "script": "Latn"
+    },
+    "tar": {
+        "family": "Uto-Aztecan",
+        "genus": "Tarahumaran",
+        "iso-3": "tar",
+        "name": "Rarámuri",
+        "script": "Latn"
+    }
+}

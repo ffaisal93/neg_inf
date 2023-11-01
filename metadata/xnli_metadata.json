@@ -1,0 +1,109 @@
+{
+    "ar": {
+        "family": "Afro-Asiatic",
+        "genus": "Semitic",
+        "iso-3": "ara",
+        "name": "Arabic",
+        "script": "Arab"
+    },
+    "bg": {
+        "family": "Indo-European",
+        "genus": "Slavic",
+        "iso-3": "bul",
+        "name": "Bulgarian",
+        "script": "Cyrl"
+    },
+    "de": {
+        "family": "Indo-European",
+        "genus": "Germanic",
+        "iso-3": "deu",
+        "name": "German",
+        "script": "Latn"
+    },
+    "el": {
+        "family": "Indo-European",
+        "genus": "Greek",
+        "iso-3": "ell",
+        "name": "Modern Greek (1453-)",
+        "script": "Grek"
+    },
+    "en": {
+        "family": "Indo-European",
+        "genus": "Germanic",
+        "iso-3": "eng",
+        "name": "English",
+        "script": "Latn"
+    },
+    "es": {
+        "family": "Indo-European",
+        "genus": "Romance",
+        "iso-3": "spa",
+        "name": "Spanish",
+        "script": "Latn"
+    },
+    "fr": {
+        "family": "Indo-European",
+        "genus": "Romance",
+        "iso-3": "fre",
+        "name": "French",
+        "script": "Latn"
+    },
+    "hi": {
+        "family": "Indo-European",
+        "genus": "Indic",
+        "iso-3": "hin",
+        "name": "Hindi",
+        "script": "Deva"
+    },
+    "ru": {
+        "family": "Indo-European",
+        "genus": "Slavic",
+        "iso-3": "rus",
+        "name": "Russian",
+        "script": "Cyrl"
+    },
+    "sw": {
+        "family": "Niger-Congo",
+        "genus": "Bantu",
+        "iso-3": "swa",
+        "name": "Swahili (macrolanguage)",
+        "script": "Latn"
+    },
+    "th": {
+        "family": "Tai-Kadai",
+        "genus": "Kam-Tai",
+        "iso-3": "tha",
+        "name": "Thai",
+        "script": "Thai"
+    },
+    "tr": {
+        "family": "Altaic",
+        "genus": "Turkic",
+        "iso-3": "tur",
+        "name": "Turkish",
+        "script": "Latn"
+    },
+    "ur": {
+        "family": "Indo-European",
+        "genus": "Indic",
+        "iso-3": "urd",
+        "name": "Urdu",
+        "script": "Arab"
+    },
+    "vi": {
+        "family": "Austro-Asiatic",
+        "genus": "Vietic",
+        "iso-3": "vie",
+        "name": "Vietnamese",
+        "script": "Latn"
+    },
+    "zh": {
+        "family": "Sino-Tibetan",
+        "genus": "Chinese",
+        "iso-3": "zho",
+        "name": "Chinese",
+        "script": "Chinese"
+    }
+
+
+}
